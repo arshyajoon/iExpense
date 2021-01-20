@@ -37,6 +37,17 @@ class Expenses: ObservableObject {
 struct ContentView: View {
     @ObservedObject var expenses = Expenses()
     @State private var showingAddExpense = false
+   
+    func textColor(amount: Int) -> Color {
+        switch amount {
+        case 0..<10:
+            return .red
+        case 10..<100:
+            return .gray
+        default:
+            return .black
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -50,20 +61,22 @@ struct ContentView: View {
                         }
                         Spacer()
                         Text("$\(item.amount)")
+                            .foregroundColor(textColor(amount: item.amount))
                     }
                 }
+                .onDelete(perform: removeItems(at:))
             }
             .sheet(isPresented: $showingAddExpense) {
                 AddView(expenses: self.expenses)
             }
             .navigationBarTitle("iExpense")
-            .navigationBarItems(trailing:
+            .navigationBarItems(leading: EditButton(), trailing:
                                     Button(action: {
                                         self.showingAddExpense = true
                                     }) {
                                         Image(systemName: "plus")
                                     }
-            )
+                        )
         }
        
     }
@@ -71,6 +84,7 @@ struct ContentView: View {
         expenses.items.remove(atOffsets: offsets)
     }
 }
+
 
 
 struct ContentView_Previews: PreviewProvider {

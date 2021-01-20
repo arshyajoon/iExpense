@@ -15,6 +15,7 @@ struct AddView: View {
         static let types = ["Business", "Personal"]
     @ObservedObject var expenses: Expenses
     @Environment(\.presentationMode) var presentationMode
+    @State private var isShowingAlert = false
     var body: some View {
         NavigationView {
                    Form {
@@ -33,8 +34,13 @@ struct AddView: View {
                            let item = ExpenseItem(name: self.name, type: self.type, amount: actualAmount)
                            self.expenses.items.append(item)
                         self.presentationMode.wrappedValue.dismiss()
+                       } else {
+                        self.isShowingAlert = true
                        }
                    })
+                   .alert(isPresented: $isShowingAlert) { () -> Alert in
+                    Alert(title: Text("Invalid word"), message: Text("This is an invalid word"), dismissButton: .default(Text("Ok")))
+                   }
                }
            }
     }
